@@ -1,0 +1,48 @@
+load_file("nrngui.hoc")
+//load_file("fixnseg.hoc")
+load_file("initT.hoc")
+
+objref stim,cell
+
+cell=new cell10()
+
+stim=new IClamp(0.5)
+stim.dur=300
+
+objref stimfile, stimvec, timevec
+stimvec=new Vector()
+stimfile=new File()
+stimfile.ropen("stim1b.txt")
+stimvec.scanf(stimfile,2,2)
+stimfile.close()
+
+timevec=new Vector(stimvec.size())
+timevec.indgen(0.025)
+
+stimvec.play(&stim.amp,timevec,1)
+
+tstop=300
+dt=0.005
+v_init=-70
+
+objref box1, Vplot, Iplot
+
+box1 = new VBox()
+box1.intercept(1)
+  Iplot=new Graph()
+  Iplot.size(0,tstop,-0.1,0.2)
+  graphList[0].append(Iplot)
+  Iplot.addexpr("stim.i")
+  
+  Vplot=new Graph()
+  Vplot.size(0,tstop,-90,50)
+  graphList[0].append(Vplot)
+  Vplot.addexpr("cell.soma[10].v(0.5)",1,1)  
+  Vplot.addexpr("cell.axon[6].v(0.5)",2,1)
+  Vplot.addexpr("cell.axon[7].v(0.5)",3,1)
+  Vplot.addexpr("cell.axon[8].v(0.99)",4,1)
+  
+box1.intercept(0)
+box1.map("",50,50,900,500)  
+  
+nrncontrolmenu()
